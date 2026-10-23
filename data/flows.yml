@@ -1,8 +1,73 @@
+
 flows:
-  transfer_money:
-    description: Help users send money to friends and family.
+  greet_user:
+    description: >
+      Greet the user and introduce My Piggybank
+      when they say hello or start a conversation.
     steps:
-      - collect: recipient
-      - collect: amount
-        description: the number of US dollars to send
-      - action: utter_transfer_complete
+      - action: utter_greet
+      
+  create_monthly_budget:
+    description: >
+      Help students create a monthly budget,
+      manage their income and expenses,
+      and decide how to distribute remaining money.
+
+    steps:
+      - action: utter_budget_intro
+
+      - collect: monthly_income
+        description: Student's monthly income in euros.
+
+      - action: utter_expenses_intro
+
+      - collect: rent
+        description: Monthly rent in euros.
+
+      - collect: insurance
+        description: Monthly insurance in euros.
+
+      - collect: groceries
+        description: Monthly grocery expenses in euros.
+
+      - action: action_calculate_budget
+
+      - collect: wants_suggestion
+        ask_before_filling: true
+        next:
+          - if: slots.wants_suggestion
+            then: suggest_budget
+          - else:
+              - action: utter_no_suggestion
+                next: END
+
+      - id: suggest_budget
+        action: action_suggest_budget
+
+      - collect: wants_adjustment
+        ask_before_filling: true
+        next:
+          - if: slots.wants_adjustment
+            then:
+              - link: adjust_budget
+          - else:
+              - action: utter_budget_finished
+                next: END
+
+  adjust_budget:
+    description: >
+      Adjust an existing budget allocation.
+      Use when the student wants to change
+      how much money goes toward savings,
+      social activities, or unexpected expenses.
+    steps:
+      - action: utter_adjust_budget_intro
+
+      - collect: budget_priority
+        description: >
+          The category the student wants to
+          prioritize, such as savings,
+          social activities, or unexpected expenses.
+
+      - action: action_adjust_budget
+
