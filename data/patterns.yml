@@ -9,3 +9,10 @@ flows:
     name: pattern search
     steps:
       - action: utter_free_chitchat_response
+
+  pattern_completed:
+    description: Handle completed conversation flows.
+    name: pattern completed
+    steps:
+      - action: action_listen
+

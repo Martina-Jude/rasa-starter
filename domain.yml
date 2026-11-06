@@ -1,49 +1,5 @@
 
-slots:
-  monthly_income:
-    type: float
-    mappings:
-      - type: from_llm
-
-  rent:
-    type: float
-    mappings:
-      - type: from_llm
-
-  insurance:
-    type: float
-    mappings:
-      - type: from_llm
-
-  groceries:
-    type: float
-    mappings:
-      - type: from_llm
-
-  remaining_budget:
-    type: float
-    mappings:
-      - type: controlled
-
-  wants_suggestion:
-    type: bool
-    mappings:
-      - type: from_llm
-
-
-
-  wants_adjustment:
-    type: bool
-    mappings:
-      - type: from_llm
-
-  budget_priority:
-    type: text
-    mappings:
-      - type: from_llm
-
-
-
+version: "3.1"
 
 responses:
   utter_greet:
@@ -56,72 +12,14 @@ responses:
         You don't need to know any complicated
         financial terms, we can go through
         everything step by step.
-        What would you like help with?
 
-  utter_budget_intro:
+  utter_ask_help:
+    - text: "What would you like help with?"
+
+  utter_show_menu:
     - text: >
-        No worries! We can start by creating
-        a simple monthly budget.
-
-  utter_ask_monthly_income:
-    - text: >
-        First, how much money do you usually
-        receive each month?
-
-  utter_expenses_intro:
-    - text: >
-        Great. Now let's look at the expenses
-        you know you have every month.
-
-  utter_ask_rent:
-    - text: >
-        How much do you spend on things like
-        rent, insurance, groceries, and other
-        necessities? Let's start with rent.
-
-  utter_ask_insurance:
-    - text: >
-        How much do you spend on insurance
-        each month?
-
-  utter_ask_groceries:
-    - text: >
-        Approximately how much do you spend
-        on groceries each month?
-
-  utter_ask_wants_suggestion:
-    - text: >
-        Would you like me to suggest a simple
-        way to divide your remaining money?
-
-  utter_no_suggestion:
-    - text: >
-        That's completely fine! You can always
-        ask me for suggestions later.
-        
-  utter_ask_wants_adjustment:
-    - text: >
-        Would you like to adjust these amounts
-        depending on what is most important to you?
-
-  utter_budget_finished:
-    - text: >
-        Great! You now have a starting point
-        for your monthly budget.
-
-  utter_adjust_budget_intro:
-    - text: >
-        Of course! We can adjust your budget
-        to better match your priorities.
-
-  utter_ask_budget_priority:
-    - text: >
-        Which category would you like to
-        prioritize: savings, social activities,
-        or unexpected expenses?
-
-
-actions:
-  - action_calculate_budget
-  - action_suggest_budget
-  - action_adjust_budget
+        With My Piggybank you can create a monthly
+        budget, record new expenses, inspect expenses,
+        change your budget, check affordability of
+        purchases, set a savings goal, request
+        saving tips and ask financial questions.
