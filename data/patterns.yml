@@ -16,3 +16,11 @@ flows:
     steps:
       - action: action_listen
 
+  pattern_search:
+    description: |
+      Handle informational questions that are not
+      supported by the assistant's existing flows.
+    name: pattern search
+    steps:
+      - action:  utter_piggy_scope
+

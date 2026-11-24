@@ -23,3 +23,7 @@ responses:
         change your budget, check affordability of
         purchases, set a savings goal, request
         saving tips and ask financial questions.
+  utter_piggy_scope:
+    - text: >
+        I can only help you wil financial matters. I can't answer
+        general knowledge questions yet.
