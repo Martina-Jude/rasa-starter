@@ -25,5 +25,5 @@ responses:
         saving tips and ask financial questions.
   utter_piggy_scope:
     - text: >
-        I can only help you wil financial matters. I can't answer
+        I can only help you with financial matters. I can't answer
         general knowledge questions yet.
