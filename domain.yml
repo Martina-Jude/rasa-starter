@@ -1,6 +1,25 @@
 
 version: "3.1"
 
+slots:
+  monthly_income:
+    type: text
+    mappings:
+      - type: from_llm
+  rent:
+    type: text
+    mappings:
+      - type: from_llm
+  insurance:
+    type: text
+    mappings:
+      - type: from_llm
+  groceries:
+    type: text
+    mappings:
+      - type: from_llm
+
+
 responses:
   utter_greet:
     - text: >
@@ -27,3 +46,36 @@ responses:
     - text: >
         I can only help you with financial matters. I can't answer
         general knowledge questions yet.
+
+  utter_incorrect_amount:
+    - text: "Incorrect amount format. Please try again!"
+    
+  utter_ask_monthly_income:
+    - text: >
+        What is your total monthly income (euros)?
+  utter_budget_income_received:
+    - text: >
+        Got it. Your monthly income is €{monthly_income}.
+
+  utter_ask_rent:
+    - text: "How much do you spend on things like rent, insurance, groceries, and other necessities? Let's start with rent."
+
+  utter_budget_rent_received:
+    - text: "Got it. Your monthly rent is €{rent}."
+
+  utter_ask_insurance:
+    - text: "How much do you spend on insurance each month?"
+
+  utter_budget_insurance_received:
+    - text: "Got it. Your monthly insurance costs €{insurance}."
+  
+  utter_ask_groceries:
+    - text: "Approximately how much do you spend on groceries each month?"
+
+  utter_budget_groceries_received:
+    - text: "Got it. You spend about €{groceries} on groceries each month."
+
+
+
+actions:
+  - action_calculate_budget

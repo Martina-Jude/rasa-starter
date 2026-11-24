@@ -16,3 +16,70 @@ flows:
     steps:
       - action: utter_show_menu
       - action: utter_ask_help
+
+  create_budget:
+    description: >
+      Help the user create a new monthly budget. Start when they
+      ask to make or set up a budget or plan their monthly spending.
+    steps:
+      - collect: monthly_income
+        description: >
+          Extract the user's total monthly income in euros.
+          If the user lists separate income sources, add all of
+          their monthly amounts together. When the user is answering
+          the monthly income question, treat amounts with no stated
+          frequency as monthly unless the message suggests otherwise.
+
+          If the user gives a total and then explains where it comes
+          from, count each source only once. If the stated total and
+          breakdown disagree, leave the slot empty. Exclude expenses,
+          one-time payments, and amounts in other currencies. If a
+          recurring amount is explicitly weekly or yearly, leave the
+          slot empty so the assistant can ask for its monthly equivalent.
+
+          Store only the total as a decimal string with no currency
+          symbol or thousands separators. For example, "My mom gives
+          me 300 euros, I get 1000 from my job, and my dad gives me
+          250 euros" becomes "1550".
+        rejections:
+          - if: 'not (slots.monthly_income matches "^[0-9]+([.][0-9]{1,2})?$")'
+            utter: utter_incorrect_amount
+      - action: utter_budget_income_received
+
+      - collect: rent
+        description: >
+          Extract the amount the user personally pays in rent each month,
+          in euros. Store it as a decimal string, such as "550" or
+          "550.50". If the user clearly says they pay no rent, store "0".
+          Leave the slot empty if the monthly rent is unclear.
+        rejections:
+          - if: 'not (slots.rent matches "^[0-9]+([.][0-9]{1,2})?$")'
+            utter: utter_incorrect_amount
+      - action: utter_budget_rent_received
+
+      - collect: insurance
+        description: >
+          Extract the amount the user personally pays for insurance each
+          month in euros. Store it as a decimal string, such as "130"
+          or "130.50". If the user clearly says they pay nothing for
+          insurance, store "0". Keep the minus sign for a negative amount.
+          If they give a yearly amount or the monthly amount is unclear,
+          ask for a monthly amount by leaving the slot empty.
+        rejections:
+          - if: 'not (slots.insurance matches "^[0-9]+([.][0-9]{1,2})?$")'
+            utter: utter_incorrect_amount
+      - action: utter_budget_insurance_received
+
+      - collect: groceries
+        description: >
+          Extract the amount the user personally spends on groceries
+          each month in euros. Accept a single estimate and store it
+          as a decimal string, such as "250" or "250.50". If the user
+          says they spend nothing on groceries, store "0". Keep the
+          minus sign for a negative amount. Leave the slot empty if
+          the amount is unclear or explicitly for a different period.
+        rejections:
+          - if: 'not (slots.groceries matches "^[0-9]+([.][0-9]{1,2})?$")'
+            utter: utter_incorrect_amount
+      - action: utter_budget_groceries_received
+      - action: action_calculate_budget
