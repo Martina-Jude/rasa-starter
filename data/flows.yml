@@ -69,7 +69,7 @@ flows:
           Extract the amount the user personally pays for insurance each
           month in euros. Store it as a decimal string, such as "130"
           or "130.50". If the user clearly says they pay nothing for
-          insurance, store "0". Keep the minus sign for a negative amount.
+          insurance, store "0".
           If they give a yearly amount or the monthly amount is unclear,
           ask for a monthly amount by leaving the slot empty.
         rejections:
@@ -124,11 +124,11 @@ flows:
             then: suggest_budget
           - else: confirm_budget
 
-            - id: suggest_budget
+      - id: suggest_budget
         action: action_suggest_budget
 
       - action: utter_budget_suggestion
-
+        next: wants_budget_adjustment
       - collect: wants_budget_adjustment
         description: >
           Determine whether the user wants to adjust the suggested
@@ -142,7 +142,7 @@ flows:
             then: adjust_budget
           - else: confirm_budget
 
-            - id: adjust_budget
+      - id: adjust_budget
         collect: priority_category
         description: >
           Extract the budget category that the user wants to

@@ -211,23 +211,10 @@ responses:
         Perfect! You have your monthly budget plan now.
         You can come back and change it anytime.
 
-  utter_ask_help:
-    - text: >
-        Is there anything else you need help with?
-
-
-
-
-actions:
-  - action_calculate_budget
-<<<<<<< HEAD
 
 actions:
   - action_calculate_budget
   - action_suggest_budget
   - action_adjust_budget
   - action_save_budget
-
-=======
   - action_apply_budget_edit
->>>>>>> 727b8f43fa22649eec930a8cfd3cfbadbb624352
