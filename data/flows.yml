@@ -90,3 +90,33 @@ flows:
             utter: utter_incorrect_amount
       - action: utter_budget_groceries_received
       - action: action_calculate_budget
+      
+    persisted_slots:
+      - monthly_income
+      - rent
+      - insurance
+      - groceries
+
+  edit_budget_amount:
+    description: >
+        Update an amount in the user's monthly budget. Start when they
+        ask to change, update, or correct their income, rent, insurance,
+        or groceries, even while another budget question is pending.
+        Use a new amount if they give one. If they only ask to change
+        a field, ask for its new amount.
+    steps:
+      - collect: edit_budget_field
+        description: >
+          Identify the amount the user wants to change: income, rent,
+          insurance, or groceries. If unclear, ask which one.
+      - collect: edit_budget_amount
+        description: >
+          Extract the new monthly euro amount for the selected field.
+          Store one decimal string. For income, add separate monthly
+          income sources when the user gives a full breakdown.
+          If the user just asks to change a field, wait for the new
+          amount. Return "invalid" for a negative amount.
+        rejections:
+          - if: 'not (slots.edit_budget_amount matches "^[0-9]+([.][0-9]{1,2})?$")'
+            utter: utter_incorrect_amount
+      - action: action_apply_budget_edit

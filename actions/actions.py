@@ -50,4 +50,34 @@ class ActionCalculateBudget(Action):
         )
         return []
 
+class ActionApplyBudgetEdit(Action):
+    def name(self):
+        return "action_apply_budget_edit"
 
+    def run(self, dispatcher, tracker, domain):
+        field = tracker.get_slot("edit_budget_field")
+        amount = tracker.get_slot("edit_budget_amount")
+        slot_name = "monthly_income" if field == "income" else field
+
+        fields = ("monthly_income", "rent", "insurance", "groceries")
+        amounts = {name: tracker.get_slot(name) for name in fields}
+        amounts[slot_name] = amount
+
+        message = f"I updated your monthly {field} to {euros(int(Decimal(amount) * 100))}."
+        remaining = 0
+
+        if all(value is not None for value in amounts.values()):
+            cents = {name: int(Decimal(value) * 100) for name, value in amounts.items()}
+            remaining = cents["monthly_income"] - sum(
+                cents[name] for name in ("rent", "insurance", "groceries")
+            )
+            if remaining >= 0:
+                message += f" You now have {euros(remaining)} left each month."
+            else:
+                message += f" Your expenses now exceed your income by {euros(-remaining)}."
+
+        dispatcher.utter_message(text=message)
+        return [
+            SlotSet(slot_name, amount),
+            SlotSet("remaining_budget_cents", remaining),
+        ]

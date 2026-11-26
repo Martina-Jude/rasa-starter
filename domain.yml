@@ -18,7 +18,20 @@ slots:
     type: text
     mappings:
       - type: from_llm
+  edit_budget_field:
+    type: categorical
+    values:
+      - income
+      - rent
+      - insurance
+      - groceries
+    mappings:
+      - type: from_llm
 
+  edit_budget_amount:
+    type: text
+    mappings:
+      - type: from_llm
 
 responses:
   utter_greet:
@@ -75,7 +88,14 @@ responses:
   utter_budget_groceries_received:
     - text: "Got it. You spend about €{groceries} on groceries each month."
 
+  utter_ask_edit_budget_field:
+    - text: "Which would you like to change: income, rent, insurance, or groceries?"
+
+  utter_ask_edit_budget_amount:
+    - text: "What is the new monthly amount for {edit_budget_field}, in euros?"
+
 
 
 actions:
   - action_calculate_budget
+  - action_apply_budget_edit
