@@ -83,3 +83,102 @@ flows:
             utter: utter_incorrect_amount
       - action: utter_budget_groceries_received
       - action: action_calculate_budget
+
+
+
+      - action: utter_budget_summary
+
+      - collect: wants_budget_suggestion
+        description: >
+          Determine whether the user wants to receive a suggested
+          allocation of their remaining monthly money between social
+          activities, unexpected expenses, and savings.
+
+          Store the boolean true if the user explicitly or implicitly
+          agrees to receive a suggestion. Examples include "yes",
+          "sure", "please", "that would be helpful", "show me",
+          "why not", and "I don't know how to divide my money".
+
+          Store the boolean false if the user clearly declines the
+          suggestion or indicates that they prefer to manage the
+          remaining money themselves. Examples include "no",
+          "no thanks", "not now", "I'll decide myself", and
+          "I don't need a suggestion".
+
+          Interpret the response in the context of the assistant's
+          most recent question. Do not interpret a previous agreement
+          about income or expenses as agreement to receive a suggestion.
+
+          If the user gives an ambiguous or contradictory response,
+          such as "maybe", "I'm not sure", or "it depends", leave the
+          slot empty so the assistant can ask for clarification.
+        next:
+          - if: slots.wants_budget_suggestion
+            then: suggest_budget
+          - else: confirm_budget
+
+            - id: suggest_budget
+        action: action_suggest_budget
+
+      - action: utter_budget_suggestion
+
+      - collect: wants_budget_adjustment
+        description: >
+          Determine whether the user wants to adjust the suggested
+          budget allocation according to their personal priorities.
+
+          Store true if the user wants to make changes and false
+          if the user is satisfied with the suggested allocation.
+          Leave the slot empty if the response is unclear.
+        next:
+          - if: slots.wants_budget_adjustment
+            then: adjust_budget
+          - else: confirm_budget
+
+            - id: adjust_budget
+        collect: priority_category
+        description: >
+          Extract the budget category that the user wants to
+          prioritize when dividing their remaining monthly money.
+
+          Accept social activities, unexpected expenses, or savings.
+          Map similar expressions to the corresponding category.
+          For example, "going out with friends" becomes
+          "social_activities", "emergencies" becomes
+          "unexpected_expenses", and "saving money" becomes "savings".
+
+          Store only "social_activities", "unexpected_expenses",
+          or "savings". Leave the slot empty if the user's
+          preferred category is unclear.
+        rejections:
+          - if: 'not (slots.priority_category matches "^(social_activities|unexpected_expenses|savings)$")'
+            utter: utter_unrecognized_category
+
+      - action: action_adjust_budget
+      - action: utter_budget_adjusted
+        next: confirm_budget
+
+      - id: confirm_budget
+        collect: budget_confirmed
+        description: >
+          Determine whether the user is satisfied with their
+          monthly budget and wants to confirm it.
+
+          Store true if the user confirms that everything looks
+          correct. Store false if the user is not satisfied or
+          wants to make further adjustments. Leave the slot empty
+          if the response is unclear.
+        next:
+          - if: slots.budget_confirmed
+            then: save_budget
+          - else: revise_budget
+
+      - id: revise_budget
+        action: utter_budget_revision
+        next: adjust_budget
+
+      - id: save_budget
+        action: action_save_budget
+
+      - action: utter_budget_saved
+      - action: utter_ask_help

@@ -20,6 +20,62 @@ slots:
       - type: from_llm
 
 
+  wants_budget_suggestion:
+    type: bool
+    mappings:
+      - type: from_llm
+
+  wants_budget_adjustment:
+    type: bool
+    mappings:
+      - type: from_llm
+
+  priority_category:
+    type: categorical
+    values:
+      - social_activities
+      - unexpected_expenses
+      - savings
+    mappings:
+      - type: from_llm
+
+  budget_confirmed:
+    type: bool
+    mappings:
+      - type: from_llm
+
+  total_expenses:
+    type: float
+    mappings:
+      - type: custom
+
+  remaining_budget:
+    type: float
+    mappings:
+      - type: custom
+
+  social_activities:
+    type: float
+    mappings:
+      - type: custom
+
+  unexpected_expenses:
+    type: float
+    mappings:
+      - type: custom
+
+  savings:
+    type: float
+    mappings:
+      - type: custom
+
+  budget_saved:
+    type: bool
+    mappings:
+      - type: custom
+
+
+
 responses:
   utter_greet:
     - text: >
@@ -76,6 +132,79 @@ responses:
     - text: "Got it. You spend about €{groceries} on groceries each month."
 
 
+  utter_budget_summary:
+    - text: >
+        That means your main monthly expenses are
+        €{total_expenses}, leaving you approximately
+        €{remaining_budget} for other expenses.
+
+        We could divide some of that between social activities,
+        unexpected expenses, and savings.
+
+  utter_ask_wants_budget_suggestion:
+    - text: >
+        Would you like me to suggest a simple way to divide
+        your remaining money?
+
+  utter_budget_suggestion:
+    - text: >
+        Sure! With €{remaining_budget} left, one option would be
+        to set aside €{social_activities} for social activities,
+        €{unexpected_expenses} for unexpected expenses,
+        and €{savings} for savings.
+
+  utter_ask_wants_budget_adjustment:
+    - text: >
+        Would you like to adjust these amounts depending on
+        what is most important to you?
+
+  utter_ask_priority_category:
+    - text: >
+        Which category would you like to prioritize:
+        savings, social activities, or unexpected expenses?
+
+  utter_unrecognized_category:
+    - text: >
+        I didn't quite understand. Could you please choose
+        between savings, social activities, and
+        unexpected expenses?
+
+  utter_budget_adjusted:
+    - text: >
+        I've adjusted your budget based on your priorities!
+
+        Your updated monthly plan is:
+        - Social activities: €{social_activities}
+        - Unexpected expenses: €{unexpected_expenses}
+        - Savings: €{savings}
+
+  utter_ask_budget_confirmed:
+    - text: >
+        Can you confirm that everything looks right?
+
+  utter_budget_revision:
+    - text: >
+        I understand! Let's adjust the budget so that it
+        works better for you.
+
+  utter_budget_saved:
+    - text: >
+        Perfect! You have your monthly budget plan now.
+        You can come back and change it anytime.
+
+  utter_ask_help:
+    - text: >
+        Is there anything else you need help with?
+
+
+
 
 actions:
   - action_calculate_budget
+
+actions:
+  - action_calculate_budget
+  - action_suggest_budget
+  - action_adjust_budget
+  - action_save_budget
+
