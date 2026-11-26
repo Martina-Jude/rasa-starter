@@ -21,6 +21,13 @@ flows:
     description: >
       Help the user create a new monthly budget. Start when they
       ask to make or set up a budget or plan their monthly spending.
+      Flow for handling requests related to creating, setting up, planning, 
+      or organizing a monthly budget. This includes users who want to create a budget, 
+      manage their money, organize their finances, plan their monthly spending, 
+      keep track of their expenses, decide how much money they can spend, or allocate their income 
+      across different expenses and savings. Also covers requests about getting better control 
+      over their finances, managing their monthly income, or figuring out where their money goes.
+
     steps:
       - collect: monthly_income
         description: >
