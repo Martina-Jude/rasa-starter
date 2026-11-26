@@ -21,6 +21,13 @@ flows:
     description: >
       Help the user create a new monthly budget. Start when they
       ask to make or set up a budget or plan their monthly spending.
+      Flow for handling requests related to creating, setting up, planning, 
+      or organizing a monthly budget. This includes users who want to create a budget, 
+      manage their money, organize their finances, plan their monthly spending, 
+      keep track of their expenses, decide how much money they can spend, or allocate their income 
+      across different expenses and savings. Also covers requests about getting better control 
+      over their finances, managing their monthly income, or figuring out where their money goes.
+
     steps:
       - collect: monthly_income
         description: >
@@ -182,3 +189,33 @@ flows:
 
       - action: utter_budget_saved
       - action: utter_ask_help
+      
+    persisted_slots:
+      - monthly_income
+      - rent
+      - insurance
+      - groceries
+
+  edit_budget_amount:
+    description: >
+        Update an amount in the user's monthly budget. Start when they
+        ask to change, update, or correct their income, rent, insurance,
+        or groceries, even while another budget question is pending.
+        Use a new amount if they give one. If they only ask to change
+        a field, ask for its new amount.
+    steps:
+      - collect: edit_budget_field
+        description: >
+          Identify the amount the user wants to change: income, rent,
+          insurance, or groceries. If unclear, ask which one.
+      - collect: edit_budget_amount
+        description: >
+          Extract the new monthly euro amount for the selected field.
+          Store one decimal string. For income, add separate monthly
+          income sources when the user gives a full breakdown.
+          If the user just asks to change a field, wait for the new
+          amount. Return "invalid" for a negative amount.
+        rejections:
+          - if: 'not (slots.edit_budget_amount matches "^[0-9]+([.][0-9]{1,2})?$")'
+            utter: utter_incorrect_amount
+      - action: action_apply_budget_edit
