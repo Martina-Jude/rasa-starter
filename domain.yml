@@ -87,6 +87,11 @@ slots:
     mappings:
       - type: custom
 
+  budget_adjustment_request:
+    type: text
+    mappings:
+      - type: from_llm
+
 
 
 responses:
@@ -210,6 +215,12 @@ responses:
     - text: >
         Perfect! You have your monthly budget plan now.
         You can come back and change it anytime.
+
+  utter_ask_budget_adjustment_request:
+    - text: >
+        Would you like to keep this split or change it?
+        You can say “more for savings”, give exact amounts,
+        or ask me to suggest a change.
 
 
 actions:

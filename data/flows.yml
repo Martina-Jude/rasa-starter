@@ -21,11 +21,11 @@ flows:
     description: >
       Help the user create a new monthly budget. Start when they
       ask to make or set up a budget or plan their monthly spending.
-      Flow for handling requests related to creating, setting up, planning, 
-      or organizing a monthly budget. This includes users who want to create a budget, 
-      manage their money, organize their finances, plan their monthly spending, 
-      keep track of their expenses, decide how much money they can spend, or allocate their income 
-      across different expenses and savings. Also covers requests about getting better control 
+      Flow for handling requests related to creating, setting up, planning,
+      or organizing a monthly budget. This includes users who want to create a budget,
+      manage their money, organize their finances, plan their monthly spending,
+      keep track of their expenses, decide how much money they can spend, or allocate their income
+      across different expenses and savings. Also covers requests about getting better control
       over their finances, managing their monthly income, or figuring out where their money goes.
 
     steps:
@@ -59,6 +59,9 @@ flows:
           in euros. Store it as a decimal string, such as "550" or
           "550.50". If the user clearly says they pay no rent, store "0".
           Leave the slot empty if the monthly rent is unclear.
+          When the current question asks for rent, a reply like "400"
+          or "my rent is 400 euros" fills rent with "400".
+          A plain amount answers the current question.
         rejections:
           - if: 'not (slots.rent matches "^[0-9]+([.][0-9]{1,2})?$")'
             utter: utter_incorrect_amount
@@ -89,9 +92,6 @@ flows:
             utter: utter_incorrect_amount
       - action: utter_budget_groceries_received
       - action: action_calculate_budget
-
-
-
       - action: utter_budget_summary
 
       - collect: wants_budget_suggestion
@@ -127,46 +127,43 @@ flows:
         action: action_suggest_budget
 
       - action: utter_budget_suggestion
-        next: wants_budget_adjustment
-      - id: wants_budget_adjustment
-        collect: wants_budget_adjustment
-        description: >
-          Determine whether the user wants to adjust the suggested
-          budget allocation according to their personal priorities.
-
-          Store true if the user wants to make changes and false
-          if the user is satisfied with the suggested allocation.
-          Leave the slot empty if the response is unclear.
-        next:
-          - if: slots.wants_budget_adjustment
-            then: adjust_budget
-          - else: confirm_budget
+        next: adjust_budget
 
       - id: adjust_budget
-        collect: priority_category
+        collect: budget_adjustment_request
+        ask_before_filling: true
         description: >
-          Extract the budget category that the user wants to
-          prioritize when dividing their remaining monthly money.
+          Interpret the user's requested change to the current split.
+          Use "keep" if they want to keep it or clearly decline a change.
+          Use "suggest" if they ask for ideas or say yes without saying
+          what to change.
 
-          Accept social activities, unexpected expenses, or savings.
-          Map similar expressions to the corresponding category.
-          For example, "going out with friends" becomes
-          "social_activities", "emergencies" becomes
-          "unexpected_expenses", and "saving money" becomes "savings".
+          Otherwise, record each requested change as category=value.
+          Separate multiple changes with a pipe. Use only
+          social_activities, unexpected_expenses, and savings as categories.
+          Use "more" or an exact euro amount written as a decimal string
+          without a currency symbol or thousands separators.
 
-          Store only "social_activities", "unexpected_expenses",
-          or "savings". Leave the slot empty if the user's
-          preferred category is unclear.
-        rejections:
-          - if: 'not (slots.priority_category matches "^(social_activities|unexpected_expenses|savings)$")'
-            utter: utter_unrecognized_category
+          "Even more for savings" becomes "savings=more".
+          "More for going out and savings" becomes
+          "social_activities=more|savings=more".
+          "200 for social and 300 for savings" becomes
+          "social_activities=200|savings=300".
+          "200 for social and more for savings" becomes
+          "social_activities=200|savings=more".
+          If the request is ambiguous, return "invalid".
+        next:
+          - if: slots.budget_adjustment_request is "keep"
+            then: confirm_budget
+          - else: apply_budget_adjustment
 
-      - action: action_adjust_budget
-      - action: utter_budget_adjusted
-        next: confirm_budget
+      - id: apply_budget_adjustment
+        action: action_adjust_budget
+        next: adjust_budget
 
       - id: confirm_budget
         collect: budget_confirmed
+        ask_before_filling: true
         description: >
           Determine whether the user is satisfied with their
           monthly budget and wants to confirm it.
@@ -189,7 +186,7 @@ flows:
 
       - action: utter_budget_saved
       - action: utter_ask_help
-      
+
     persisted_slots:
       - monthly_income
       - rent
@@ -197,12 +194,14 @@ flows:
       - groceries
 
   edit_budget_amount:
+    always_include_in_prompt: true
     description: >
-        Update an amount in the user's monthly budget. Start when they
-        ask to change, update, or correct their income, rent, insurance,
-        or groceries, even while another budget question is pending.
-        Use a new amount if they give one. If they only ask to change
-        a field, ask for its new amount.
+            description: >
+            Start only when the user's latest message explicitly asks to change
+            or correct a budget amount, such as "change my income again" or
+            "update my rent to 600". If the user names a field without a new
+            amount, ask for the new amount. A reply like "400" to a question
+            in create_budget belongs to the slot currently being collected there.
     steps:
       - collect: edit_budget_field
         description: >
@@ -215,6 +214,9 @@ flows:
           income sources when the user gives a full breakdown.
           If the user just asks to change a field, wait for the new
           amount. Return "invalid" for a negative amount.
+          Use this slot only when the user explicitly requests an edit
+          and provides the replacement amount in that same message, or
+          when the assistant has asked for the replacement amount.
         rejections:
           - if: 'not (slots.edit_budget_amount matches "^[0-9]+([.][0-9]{1,2})?$")'
             utter: utter_incorrect_amount

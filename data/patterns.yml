@@ -22,3 +22,32 @@ flows:
     name: pattern completed
     steps:
       - action: action_listen
+  
+  pattern_continue_interrupted:
+    description: Resume the only paused flow, or ask which one to resume.
+    steps:
+      - noop: true
+        next:
+          - if: context.multiple_flows_interrupted
+            then: choose_interrupted_flow
+          - else: resume_interrupted_flow
+
+      - id: choose_interrupted_flow
+        collect: interrupted_flow_to_continue
+        ask_before_filling: true
+        description: >
+          Select the paused flow the user explicitly chooses.
+          Use "none" only if they explicitly ask to stop all paused flows.
+          Leave the slot empty for an unrelated or unclear reply.
+        next:
+          - if: slots.interrupted_flow_to_continue is "none"
+            then: cancel_interrupted_flows
+          - else: resume_interrupted_flow
+
+      - id: resume_interrupted_flow
+        action: action_continue_interrupted_flow
+        next: END
+
+      - id: cancel_interrupted_flows
+        action: action_cancel_interrupted_flows
+        next: END
