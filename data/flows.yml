@@ -82,8 +82,7 @@ flows:
           Extract the amount the user personally spends on groceries
           each month in euros. Accept a single estimate and store it
           as a decimal string, such as "250" or "250.50". If the user
-          says they spend nothing on groceries, store "0". Keep the
-          minus sign for a negative amount. Leave the slot empty if
+          says they spend nothing on groceries, store "0". Leave the slot empty if
           the amount is unclear or explicitly for a different period.
         rejections:
           - if: 'not (slots.groceries matches "^[0-9]+([.][0-9]{1,2})?$")'
