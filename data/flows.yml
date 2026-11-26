@@ -128,7 +128,8 @@ flows:
 
       - action: utter_budget_suggestion
         next: wants_budget_adjustment
-      - collect: wants_budget_adjustment
+      - id: wants_budget_adjustment
+        collect: wants_budget_adjustment
         description: >
           Determine whether the user wants to adjust the suggested
           budget allocation according to their personal priorities.
